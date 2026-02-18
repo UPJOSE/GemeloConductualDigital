@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  --color-electric-blue: #2563EB;
+  --color-neon-green: #22C55E;
+  --color-bright-orange: #F97316;
+  --color-vibrant-yellow: #FACC15;
+  --color-soft-red: #EF4444;
+  --color-deep-purple: #7C3AED;
+  --color-dark-bg: #0F172A;
+  --color-card-bg: rgba(255, 255, 255, 0.08);
+  --font-display: 'Fredoka', sans-serif;
+  --font-body: 'Nunito', sans-serif;
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--color-dark-bg);
+    color: white;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-electric-blue);
+    border-radius: 4px;
+  }
+}
+
+@keyframes aurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.6); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.aurora-bg {
+  background: linear-gradient(-45deg, #0F172A, #1E3A5F, #1a1a4e, #0F172A, #1E3A5F);
+  background-size: 400% 400%;
+  animation: aurora 15s ease infinite;
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+.btn-3d {
+  transform: perspective(500px) rotateX(0deg);
+  transition: all 0.3s ease;
+}
+
+.btn-3d:hover {
+  transform: perspective(500px) rotateX(5deg) translateY(-4px);
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #2563EB, #22C55E, #F97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
