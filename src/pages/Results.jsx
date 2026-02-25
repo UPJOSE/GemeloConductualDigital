@@ -203,9 +203,9 @@ function BadgeDisplay({ earnedBadges, badges }) {
 export default function Results() {
   const navigate = useNavigate();
   const {
-    irp, riskProfile, irpHistory, avatar, decisions, scenarios,
+    irp, riskProfile, irpHistory, avatar, decisions, powers,
     earnedBadges, badges, getRiskLevel, getMostVulnerableCategory,
-    getSessionDuration, resetSimulation, simulationComplete,
+    getSessionDuration, resetSimulation, simulationComplete, visitedRooms, rooms,
   } = useStore();
 
   const [showContent, setShowContent] = useState(false);
@@ -282,17 +282,18 @@ export default function Results() {
     doc.text(`Nivel: ${riskLevel.label}`, 30, 72);
     doc.text(`Categoría más vulnerable: ${CATEGORY_LABELS[mostVulnerable]}`, 30, 82);
     doc.text(`Duración: ${Math.floor(sessionDuration / 60)}m ${sessionDuration % 60}s`, 30, 92);
+    doc.text(`Habitaciones exploradas: ${visitedRooms.length}/5`, 30, 102);
 
     doc.setDrawColor(37, 99, 235);
-    doc.line(30, 100, 180, 100);
+    doc.line(30, 110, 180, 110);
 
     doc.setFontSize(16);
     doc.setTextColor(37, 99, 235);
-    doc.text('Perfil de Riesgo por Categoría', 30, 115);
+    doc.text('Perfil de Riesgo por Categoría', 30, 125);
 
     doc.setFontSize(12);
     doc.setTextColor(255, 255, 255);
-    let y = 128;
+    let y = 138;
     Object.entries(riskProfile).forEach(([key, val]) => {
       doc.text(`${CATEGORY_LABELS[key]}: ${val > 0 ? '+' : ''}${val.toFixed(1)}`, 35, y);
       y += 10;
@@ -507,6 +508,29 @@ export default function Results() {
           <BadgeDisplay earnedBadges={earnedBadges} badges={badges} />
         </motion.div>
 
+        {/* Powers */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.75 }}
+          className="mb-12"
+        >
+          <h2 className="text-2xl font-bold text-center mb-6">✨ Poderes Desbloqueados</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Object.values(powers).map((p) => (
+              <motion.div key={p.id} whileHover={{ scale: 1.05 }}
+                className={`glass-card p-4 text-center ${p.energy >= 100 ? 'border border-vibrant-yellow/30' : 'opacity-50'}`}>
+                <span className="text-3xl block mb-2">{p.icon}</span>
+                <p className="text-xs font-bold text-white">{p.name}</p>
+                <div className="w-full h-2 bg-white/10 rounded-full mt-2 overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${p.energy}%`, backgroundColor: p.color }} />
+                </div>
+                <p className="text-[10px] mt-1" style={{ color: p.color }}>{Math.round(p.energy)}%</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Session Stats */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -515,7 +539,7 @@ export default function Results() {
           className="glass-card p-6 mb-12"
         >
           <h3 className="text-lg font-bold mb-4 text-center">📋 Resumen de Sesión</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
             <div>
               <p className="text-2xl font-bold text-electric-blue">{Math.round(irp)}</p>
               <p className="text-xs text-white/50">IRP Final</p>
@@ -527,6 +551,10 @@ export default function Results() {
             <div>
               <p className="text-2xl font-bold text-bright-orange">{CATEGORY_LABELS[mostVulnerable]}</p>
               <p className="text-xs text-white/50">Más Vulnerable</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-deep-purple">{visitedRooms.length}/5</p>
+              <p className="text-xs text-white/50">Habitaciones</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-vibrant-yellow">

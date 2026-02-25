@@ -1,391 +1,433 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import useStore from '../store/useStore';
 import AvatarDisplay from '../components/AvatarDisplay';
 import IRPBar from '../components/IRPBar';
 
-const SCENARIO_ILLUSTRATIONS = {
-  pot: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <ellipse cx="100" cy="140" rx="60" ry="15" fill="#64748B" />
-      <rect x="45" y="80" width="110" height="60" rx="8" fill="#94A3B8" />
-      <rect x="40" y="75" width="120" height="12" rx="6" fill="#64748B" />
-      <rect x="155" y="90" width="30" height="8" rx="4" fill="#475569" />
-      {[0, 1, 2].map((i) => (
-        <motion.path
-          key={i}
-          d={`M${75 + i * 25},75 Q${80 + i * 25},55 ${75 + i * 25},40`}
-          stroke="white"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.4"
-          animate={{ y: [0, -10, 0], opacity: [0.2, 0.5, 0.2] }}
-          transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-        />
-      ))}
-    </svg>
-  ),
-  outlet: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <rect x="50" y="50" width="100" height="100" rx="12" fill="#E2E8F0" />
-      <rect x="55" y="55" width="90" height="90" rx="8" fill="#F8FAFC" />
-      <circle cx="80" cy="85" r="6" fill="#1E293B" />
-      <circle cx="120" cy="85" r="6" fill="#1E293B" />
-      <rect x="93" y="105" width="14" height="8" rx="4" fill="#1E293B" />
-      <motion.line x1="80" y1="130" x2="80" y2="160" stroke="#FACC15" strokeWidth="3" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }} />
-    </svg>
-  ),
-  fireworks: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <motion.circle
-          key={i}
-          cx={100 + Math.cos((i * Math.PI) / 3) * 40}
-          cy={80 + Math.sin((i * Math.PI) / 3) * 40}
-          r="4"
-          fill={['#EF4444', '#F97316', '#FACC15', '#22C55E', '#2563EB', '#7C3AED'][i]}
-          animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
-          transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
-        />
-      ))}
-      <rect x="95" y="120" width="10" height="50" rx="3" fill="#94A3B8" />
-      <motion.circle cx="100" cy="80" r="8" fill="#F97316" animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 1, repeat: Infinity }} />
-    </svg>
-  ),
-  iron: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <path d="M60,120 L140,120 L160,100 Q160,80 140,80 L80,80 Q60,80 60,100 Z" fill="#94A3B8" />
-      <rect x="90" y="60" width="15" height="25" rx="4" fill="#64748B" />
-      <motion.path d="M80,130 Q90,140 80,150" stroke="#EF4444" strokeWidth="2" fill="none" opacity="0.5" animate={{ opacity: [0.2, 0.6, 0.2] }} transition={{ duration: 2, repeat: Infinity }} />
-      <motion.path d="M110,130 Q120,140 110,150" stroke="#EF4444" strokeWidth="2" fill="none" opacity="0.5" animate={{ opacity: [0.2, 0.6, 0.2] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} />
-    </svg>
-  ),
-  shower: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <rect x="85" y="30" width="30" height="10" rx="5" fill="#94A3B8" />
-      <rect x="95" y="40" width="10" height="30" fill="#64748B" />
-      <ellipse cx="100" cy="75" rx="30" ry="8" fill="#94A3B8" />
-      {[0, 1, 2, 3, 4].map((i) => (
-        <motion.line
-          key={i}
-          x1={80 + i * 10}
-          y1="83"
-          x2={78 + i * 10}
-          y2="120"
-          stroke="#60A5FA"
-          strokeWidth="2"
-          opacity="0.5"
-          animate={{ y: [0, 15, 0], opacity: [0.2, 0.6, 0.2] }}
-          transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
-        />
-      ))}
-    </svg>
-  ),
-  microwave: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <rect x="30" y="60" width="140" height="100" rx="8" fill="#64748B" />
-      <rect x="40" y="70" width="90" height="75" rx="4" fill="#1E293B" />
-      <circle cx="150" cy="90" r="5" fill="#22C55E" />
-      <circle cx="150" cy="110" r="5" fill="#94A3B8" />
-      <rect x="140" y="125" width="20" height="8" rx="2" fill="#94A3B8" />
-      <motion.rect x="55" y="100" width="60" height="10" rx="3" fill="#F97316" opacity="0.6" animate={{ opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 2, repeat: Infinity }} />
-    </svg>
-  ),
-  stove: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <rect x="30" y="80" width="140" height="80" rx="6" fill="#475569" />
-      <circle cx="70" cy="100" r="20" fill="#1E293B" stroke="#64748B" strokeWidth="2" />
-      <circle cx="130" cy="100" r="20" fill="#1E293B" stroke="#64748B" strokeWidth="2" />
-      <motion.circle cx="70" cy="100" r="12" fill="#EF4444" opacity="0.4" animate={{ opacity: [0.2, 0.5, 0.2], scale: [0.9, 1.1, 0.9] }} transition={{ duration: 2, repeat: Infinity }} />
-    </svg>
-  ),
-  lighter: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <rect x="80" y="70" width="40" height="80" rx="6" fill="#94A3B8" />
-      <rect x="85" y="75" width="30" height="20" rx="3" fill="#64748B" />
-      <motion.path d="M100,70 Q95,50 100,35 Q105,50 100,70" fill="#F97316" animate={{ scaleY: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }} transition={{ duration: 1, repeat: Infinity }} />
-    </svg>
-  ),
-  wire: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <path d="M30,100 Q60,80 90,100 Q120,120 150,100 Q170,90 180,100" stroke="#1E293B" strokeWidth="8" fill="none" strokeLinecap="round" />
-      <path d="M30,100 Q60,80 90,100 Q120,120 150,100 Q170,90 180,100" stroke="#64748B" strokeWidth="5" fill="none" strokeLinecap="round" />
-      <path d="M100,97 L130,103" stroke="#D97706" strokeWidth="3" />
-      <path d="M105,95 L125,105" stroke="#D97706" strokeWidth="2" />
-      <motion.circle cx="115" cy="100" r="8" fill="#FACC15" opacity="0.3" animate={{ opacity: [0.1, 0.4, 0.1], scale: [0.8, 1.2, 0.8] }} transition={{ duration: 1.5, repeat: Infinity }} />
-    </svg>
-  ),
-  matches: (
-    <svg viewBox="0 0 200 200" className="w-full max-w-[200px] mx-auto">
-      <rect x="60" y="60" width="80" height="100" rx="4" fill="#D97706" />
-      <rect x="65" y="65" width="70" height="30" rx="2" fill="#92400E" />
-      {[0, 1, 2].map((i) => (
-        <g key={i}>
-          <rect x={78 + i * 15} y="40" width="4" height="30" fill="#F5D0A9" />
-          <circle cx={80 + i * 15} cy="40" r="4" fill="#EF4444" />
-        </g>
-      ))}
-      <motion.circle cx="95" cy="35" r="6" fill="#F97316" opacity="0.5" animate={{ scale: [0.8, 1.3, 0.8], opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }} />
-    </svg>
-  ),
-};
-
-function ScenarioCard({ scenario, onDecision, selectedDecision }) {
-  const illustration = SCENARIO_ILLUSTRATIONS[scenario.illustration] || null;
-
+/* ─── Mascot ─── */
+function Mascot({ state, message }) {
+  const expressions = { happy: '😺', excited: '😸', worried: '😿', scared: '🙀', celebrating: '😻', hint: '🐱' };
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      className="w-full max-w-2xl mx-auto"
+      initial={{ scale: 0, y: 20 }} animate={{ scale: 1, y: 0 }}
+      className="fixed bottom-4 left-4 z-40 flex items-end gap-2"
     >
-      <div className="glass-card p-6 md:p-8">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-3xl">{scenario.icon}</span>
-          <h2 className="text-xl md:text-2xl font-bold">{scenario.title}</h2>
-        </div>
-
-        {/* Illustration */}
-        <div className="mb-6 flex justify-center">
-          {illustration}
-        </div>
-
-        {/* Description */}
-        <p className="text-white/70 text-center mb-8 text-lg leading-relaxed">
-          {scenario.description}
-        </p>
-
-        {/* Decisions */}
-        <div className="space-y-3">
-          <p className="text-sm text-white/50 text-center mb-4">¿Qué decides hacer?</p>
-          {scenario.decisions.map((decision) => (
-            <motion.button
-              key={decision.id}
-              whileHover={!selectedDecision ? { scale: 1.02, x: 8 } : {}}
-              whileTap={!selectedDecision ? { scale: 0.98 } : {}}
-              onClick={() => !selectedDecision && onDecision(decision)}
-              disabled={!!selectedDecision}
-              className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                selectedDecision?.id === decision.id
-                  ? decision.riskDelta <= 0
-                    ? 'border-neon-green bg-neon-green/10 text-white'
-                    : 'border-bright-orange bg-bright-orange/10 text-white'
-                  : selectedDecision
-                  ? 'border-white/5 bg-white/3 text-white/30'
-                  : 'border-white/10 bg-white/5 text-white/80 hover:border-white/30 hover:bg-white/10'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-lg">
-                  {selectedDecision?.id === decision.id
-                    ? decision.riskDelta <= 0 ? '✅' : '⚠️'
-                    : '○'}
-                </span>
-                <span className="font-medium">{decision.text}</span>
-              </div>
-            </motion.button>
-          ))}
-        </div>
-      </div>
+      <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 2, repeat: Infinity }}
+        className="text-4xl cursor-default select-none">{expressions[state] || '😺'}</motion.div>
+      <AnimatePresence>
+        {message && (
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+            className="glass-card px-3 py-2 max-w-[200px] text-xs text-white/80 mb-2">{message}</motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
 
-function FeedbackOverlay({ decision, onContinue }) {
+/* ─── Power Bars ─── */
+function PowerPanel({ powers, onActivate }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-2xl mx-auto mt-4"
-    >
-      <div className={`glass-card p-6 border-2 ${
-        decision.riskDelta <= 0 ? 'border-neon-green/30' : 'border-bright-orange/30'
-      }`}>
-        <div className="flex items-start gap-3">
-          <span className="text-2xl">{decision.riskDelta <= 0 ? '🛡️' : '💡'}</span>
+    <div className="flex flex-col gap-2">
+      {Object.values(powers).map((p) => (
+        <motion.button key={p.id} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+          onClick={() => p.energy >= 100 && onActivate(p.id)}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-all ${
+            p.energy >= 100 ? 'glass-card border border-white/20 cursor-pointer' : 'bg-white/5 cursor-default'}`}
+        >
+          <span>{p.icon}</span>
           <div className="flex-1">
-            <h3 className={`font-bold mb-1 ${decision.riskDelta <= 0 ? 'text-neon-green' : 'text-bright-orange'}`}>
-              {decision.riskDelta <= 0 ? '¡Buena decisión!' : 'Cuidado con esa decisión'}
-            </h3>
-            <p className="text-white/70 text-sm leading-relaxed">{decision.narrativeImpact}</p>
+            <div className="flex justify-between mb-0.5">
+              <span className="text-[10px] font-semibold text-white/60">{p.name}</span>
+              <span className="text-[10px]" style={{ color: p.color }}>{Math.round(p.energy)}%</span>
+            </div>
+            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <motion.div className="h-full rounded-full" style={{ backgroundColor: p.color }}
+                animate={{ width: `${p.energy}%` }} transition={{ duration: 0.5 }} />
+            </div>
           </div>
-        </div>
+          {p.energy >= 100 && <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1, repeat: Infinity }}
+            className="text-xs">✨</motion.span>}
+        </motion.button>
+      ))}
+    </div>
+  );
+}
 
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-white/40">Impacto IRP:</span>
-            <span className={`text-sm font-bold ${decision.riskDelta <= 0 ? 'text-neon-green' : 'text-bright-orange'}`}>
-              {decision.riskDelta > 0 ? '+' : ''}{(decision.riskDelta * decision.weight).toFixed(1)}
-            </span>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onContinue}
-            className="px-6 py-2 bg-gradient-to-r from-electric-blue to-deep-purple text-white font-semibold rounded-xl text-sm"
-          >
-            Continuar →
-          </motion.button>
-        </div>
+/* ─── Event Timer ─── */
+function EventTimer({ seconds, onExpire }) {
+  const [time, setTime] = useState(seconds);
+  useEffect(() => {
+    if (time <= 0) { onExpire(); return; }
+    const t = setTimeout(() => setTime(time - 1), 1000);
+    return () => clearTimeout(t);
+  }, [time, onExpire]);
+
+  const pct = (time / seconds) * 100;
+  const color = pct > 50 ? '#22C55E' : pct > 25 ? '#FACC15' : '#EF4444';
+  return (
+    <div className="flex items-center gap-2">
+      <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 0.5, repeat: Infinity }}
+        className="text-lg">⏱️</motion.div>
+      <div className="flex-1 h-3 bg-white/10 rounded-full overflow-hidden">
+        <motion.div className="h-full rounded-full" style={{ backgroundColor: color }}
+          animate={{ width: `${pct}%` }} transition={{ duration: 0.3 }} />
       </div>
+      <span className="text-sm font-bold" style={{ color }}>{time}s</span>
+    </div>
+  );
+}
+
+/* ─── Badge Toast ─── */
+function BadgeToast({ badge, onClose }) {
+  useEffect(() => { const t = setTimeout(onClose, 3500); return () => clearTimeout(t); }, [onClose]);
+  return (
+    <motion.div initial={{ y: -80, opacity: 0, scale: 0.8 }} animate={{ y: 0, opacity: 1, scale: 1 }}
+      exit={{ y: -80, opacity: 0 }}
+      className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] glass-card px-6 py-4 border-2 border-vibrant-yellow/40 text-center"
+    >
+      <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 0.6 }} className="text-4xl mb-1">{badge.icon}</motion.div>
+      <p className="text-vibrant-yellow font-bold text-sm">¡Insignia Desbloqueada!</p>
+      <p className="text-white text-xs mt-1">{badge.name}</p>
     </motion.div>
   );
 }
 
+/* ─── Alt Future Modal ─── */
+function AltFutureModal({ text, onClose }) {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <motion.div initial={{ scale: 0.8, y: 30 }} animate={{ scale: 1, y: 0 }} onClick={(e) => e.stopPropagation()}
+        className="glass-card p-6 max-w-md border-2 border-deep-purple/40 text-center">
+        <span className="text-3xl">🔮</span>
+        <h3 className="text-lg font-bold mt-2 text-deep-purple">¿Y si hubieras elegido diferente?</h3>
+        <p className="text-white/70 text-sm mt-3 leading-relaxed">{text}</p>
+        <button onClick={onClose} className="mt-4 px-5 py-2 bg-deep-purple/20 border border-deep-purple/30 rounded-xl text-sm text-white font-semibold hover:bg-deep-purple/30 transition-all">Entendido</button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ─── Confetti ─── */
+function Confetti() {
+  return (
+    <>
+      {Array.from({ length: 20 }).map((_, i) => (
+        <motion.div key={i}
+          initial={{ opacity: 1, x: '50vw', y: '50vh', scale: 0 }}
+          animate={{ opacity: 0, x: `${20 + Math.random() * 60}vw`, y: `${Math.random() * 100}vh`, scale: Math.random() + 0.5, rotate: Math.random() * 360 }}
+          transition={{ duration: 1.5, ease: 'easeOut', delay: i * 0.03 }}
+          className="fixed pointer-events-none z-[58] w-2.5 h-2.5 rounded-sm"
+          style={{ backgroundColor: ['#22C55E', '#2563EB', '#FACC15', '#F97316', '#7C3AED', '#EF4444', '#06B6D4'][i % 7] }} />
+      ))}
+    </>
+  );
+}
+
+/* ─── Room Card in House Map ─── */
+function RoomCard({ room, visited, eventsLeft, active, onClick, activePower }) {
+  const allDone = eventsLeft === 0;
+  return (
+    <motion.button whileHover={{ scale: 1.08, y: -5 }} whileTap={{ scale: 0.95 }} onClick={onClick}
+      className={`relative glass-card p-4 md:p-5 text-center transition-all min-w-[120px] ${
+        active ? 'border-2 ring-2 ring-offset-2 ring-offset-dark-bg' : 'border border-white/10'
+      } ${allDone ? 'opacity-60' : ''}`}
+      style={active ? { borderColor: room.color, ringColor: room.color } : {}}
+    >
+      {activePower && eventsLeft > 0 && (
+        <motion.div animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }}
+          className="absolute inset-0 rounded-2xl" style={{ boxShadow: `inset 0 0 20px ${room.color}40` }} />
+      )}
+      <motion.span animate={!allDone ? { y: [0, -4, 0] } : {}} transition={{ duration: 2, repeat: Infinity }}
+        className="text-3xl md:text-4xl block mb-2">{room.icon}</motion.span>
+      <p className="text-xs md:text-sm font-bold text-white">{room.name}</p>
+      <div className="flex items-center justify-center gap-1 mt-1.5">
+        {visited && <span className="text-[10px]">✅</span>}
+        {eventsLeft > 0 ? (
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10" style={{ color: room.color }}>{eventsLeft} evento{eventsLeft > 1 ? 's' : ''}</span>
+        ) : (
+          <span className="text-[10px] text-white/30">Completa</span>
+        )}
+      </div>
+    </motion.button>
+  );
+}
+
+/* ─── Event Panel ─── */
+function EventPanel({ event, onDecision, selectedDecision, showFeedback, feedbackDecision, onContinue, onAltFuture, timerExpired }) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+      className="glass-card p-5 md:p-6 w-full">
+      <div className="flex items-center gap-3 mb-3">
+        <span className="text-2xl">{event.icon}</span>
+        <div className="flex-1">
+          <h3 className="text-lg font-bold">{event.title}</h3>
+          {event.type === 'surprise' && <span className="text-[10px] px-2 py-0.5 bg-bright-orange/20 text-bright-orange rounded-full font-bold">⚡ EVENTO SORPRESA</span>}
+        </div>
+      </div>
+
+      {event.timerSeconds && !selectedDecision && !timerExpired && (
+        <div className="mb-4"><EventTimer seconds={event.timerSeconds} onExpire={() => {}} /></div>
+      )}
+
+      <p className="text-white/70 text-sm mb-5 leading-relaxed">{event.description}</p>
+
+      <div className="space-y-2">
+        {event.decisions.map((d) => (
+          <motion.button key={d.id} whileHover={!selectedDecision ? { scale: 1.01, x: 4 } : {}}
+            whileTap={!selectedDecision ? { scale: 0.98 } : {}}
+            onClick={() => !selectedDecision && onDecision(d)} disabled={!!selectedDecision}
+            className={`w-full text-left p-3 rounded-xl border-2 transition-all text-sm ${
+              selectedDecision?.id === d.id
+                ? d.riskDelta <= 0 ? 'border-neon-green bg-neon-green/10' : 'border-bright-orange bg-bright-orange/10'
+                : selectedDecision ? 'border-white/5 bg-white/[0.02] text-white/30' : 'border-white/10 bg-white/5 hover:border-white/20'
+            }`}
+          >
+            <span className="font-medium">{d.text}</span>
+          </motion.button>
+        ))}
+      </div>
+
+      <AnimatePresence>
+        {showFeedback && feedbackDecision && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4 pt-4 border-t border-white/10">
+            <div className="flex items-start gap-2 mb-3">
+              <span className="text-xl">{feedbackDecision.riskDelta <= 0 ? '🛡️' : '💡'}</span>
+              <div>
+                <p className={`text-sm font-bold ${feedbackDecision.riskDelta <= 0 ? 'text-neon-green' : 'text-bright-orange'}`}>
+                  {feedbackDecision.riskDelta <= 0 ? '¡Buena decisión!' : 'Hmm, cuidado...'}</p>
+                <p className="text-white/60 text-xs mt-1">{feedbackDecision.narrativeImpact}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button onClick={() => onAltFuture(feedbackDecision.altFuture)}
+                className="px-3 py-1.5 bg-deep-purple/20 border border-deep-purple/30 rounded-lg text-xs text-white/70 hover:text-white transition-all">
+                🔮 ¿Y si...?
+              </button>
+              <button onClick={onContinue}
+                className="px-4 py-1.5 bg-gradient-to-r from-electric-blue to-deep-purple text-white font-semibold rounded-lg text-xs ml-auto">
+                Continuar →
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+/* ─── MAIN SIMULATOR ─── */
 export default function Simulator() {
   const navigate = useNavigate();
+  const store = useStore();
   const {
-    scenarios,
-    currentScenarioIndex,
-    nextScenario,
-    updateIRP,
-    addDecision,
-    irp,
-    avatar,
-    setSimulationComplete,
-    checkBadges,
-  } = useStore();
+    irp, avatar, rooms, currentRoom, visitedRooms, powers, activePower,
+    mascotState, mascotMessage, activeEvent, completedEvents,
+    showAltFuture, altFutureText, newBadge, simulationComplete,
+  } = store;
 
   const [selectedDecision, setSelectedDecision] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [bgTint, setBgTint] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [timerExpired, setTimerExpired] = useState(false);
 
-  const currentScenario = scenarios[currentScenarioIndex];
-  const progress = ((currentScenarioIndex) / scenarios.length) * 100;
-
-  useEffect(() => {
-    if (irp > 60) {
-      setBgTint('from-red-900/20 to-transparent');
-    } else if (irp < 30) {
-      setBgTint('from-green-900/20 to-transparent');
-    } else {
-      setBgTint('');
-    }
+  const getEnvStyle = useCallback(() => {
+    if (irp <= 25) return { bg: 'from-green-950/30 to-dark-bg', brightness: 1.1 };
+    if (irp <= 50) return { bg: 'from-dark-bg to-dark-bg', brightness: 1 };
+    if (irp <= 75) return { bg: 'from-orange-950/20 to-dark-bg', brightness: 0.95 };
+    return { bg: 'from-red-950/20 to-dark-bg', brightness: 0.9 };
   }, [irp]);
+
+  const envStyle = getEnvStyle();
+
+  const getAvailableEvents = (roomId) => {
+    return (store.roomEvents[roomId] || []).filter((e) => !completedEvents.includes(e.id));
+  };
+
+  const handleRoomClick = (roomId) => {
+    store.setCurrentRoom(roomId);
+    const avail = getAvailableEvents(roomId);
+    if (avail.length > 0) {
+      const evt = avail[Math.random() < 0.4 && avail.find((e) => e.type === 'surprise') ? avail.findIndex((e) => e.type === 'surprise') : 0];
+      const chosen = typeof evt === 'number' ? avail[evt] : avail[0];
+      store.setActiveEvent(chosen);
+      if (chosen.type === 'surprise') store.setMascotState('scared');
+      else store.setMascotState('hint', `Cuidado en ${rooms[roomId].name}...`);
+    } else {
+      store.setActiveEvent(null);
+      store.setMascotState('happy', `${rooms[roomId].name} está segura. ¡Bien hecho!`);
+    }
+    setSelectedDecision(null);
+    setShowFeedback(false);
+    setTimerExpired(false);
+  };
 
   const handleDecision = (decision) => {
     setSelectedDecision(decision);
-    updateIRP(decision.riskDelta, decision.weight, currentScenario.category);
-    addDecision(currentScenario.id, decision);
+    store.updateIRP(decision.riskDelta, decision.weight, activeEvent.category);
+    store.addDecision(activeEvent.id, decision, currentRoom);
     setShowFeedback(true);
+
+    if (decision.riskDelta <= 0) {
+      store.setMascotState('excited');
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
+    } else {
+      store.setMascotState('worried');
+    }
+    store.checkBadges();
   };
 
   const handleContinue = () => {
-    if (currentScenarioIndex >= scenarios.length - 1) {
-      checkBadges();
-      setSimulationComplete(true);
-      navigate('/results');
+    store.completeEvent(activeEvent.id);
+    setSelectedDecision(null);
+    setShowFeedback(false);
+
+    const remaining = getAvailableEvents(currentRoom);
+    if (remaining.length > 0) {
+      store.setActiveEvent(remaining[0]);
+      store.setMascotState('hint', 'Hay algo más aquí...');
     } else {
-      nextScenario();
-      setSelectedDecision(null);
-      setShowFeedback(false);
+      store.setActiveEvent(null);
+      store.setMascotState('happy', '¡Habitación completada! Explora otra.');
+
+      const allEvents = Object.values(store.roomEvents).flat();
+      const allDone = allEvents.every((e) => [...completedEvents, activeEvent.id].includes(e.id));
+      if (allDone) {
+        store.checkBadges();
+        store.setSimulationComplete(true);
+        setTimeout(() => navigate('/results'), 1500);
+      }
     }
   };
 
-  if (!currentScenario) {
-    navigate('/results');
-    return null;
-  }
+  const totalEvents = Object.values(store.roomEvents).flat().length;
+  const doneCount = completedEvents.length;
+  const progress = (doneCount / totalEvents) * 100;
 
   return (
-    <div className={`aurora-bg min-h-screen ${bgTint ? `bg-gradient-to-b ${bgTint}` : ''}`}>
-      {/* Dynamic background tint */}
-      <div className={`fixed inset-0 pointer-events-none transition-all duration-1000 bg-gradient-to-b ${bgTint}`} />
+    <div className={`min-h-screen bg-gradient-to-b ${envStyle.bg} transition-all duration-1000`}>
+      {/* Env tint overlay */}
+      <div className="fixed inset-0 pointer-events-none transition-all duration-1000"
+        style={{ filter: `brightness(${envStyle.brightness})` }} />
 
-      {/* Top bar */}
+      {/* Top HUD */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-dark-bg/80 backdrop-blur-lg border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8">
-              <AvatarDisplay avatar={avatar} size={32} animate={false} />
-            </div>
-            <span className="text-sm font-semibold text-white/70">{avatar.name}</span>
+        <div className="max-w-5xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7"><AvatarDisplay avatar={avatar} size={28} animate={false} /></div>
+            <span className="text-xs font-semibold text-white/60 hidden sm:block">{avatar.name}</span>
           </div>
-
           <IRPBar compact />
+          <div className="text-xs text-white/40">{doneCount}/{totalEvents}</div>
+        </div>
+        <div className="h-1 bg-white/5">
+          <motion.div className="h-full bg-gradient-to-r from-electric-blue via-neon-green to-vibrant-yellow"
+            animate={{ width: `${progress}%` }} transition={{ duration: 0.5 }} />
+        </div>
+      </div>
 
-          <div className="text-sm text-white/50">
-            {currentScenarioIndex + 1}/{scenarios.length}
+      {/* Main Layout */}
+      <div className="pt-16 pb-20 px-3 min-h-screen relative z-10">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 mt-2">
+          {/* Left sidebar: Powers + House Map */}
+          <div className="space-y-4">
+            {/* House Map */}
+            <div className="glass-card p-4">
+              <h3 className="text-xs font-bold text-white/50 uppercase tracking-wider mb-3">🏠 Tu Casa Digital</h3>
+              <div className="grid grid-cols-3 lg:grid-cols-1 gap-2">
+                {Object.values(rooms).map((room) => {
+                  const eventsLeft = getAvailableEvents(room.id).length;
+                  return (
+                    <RoomCard key={room.id} room={room} visited={visitedRooms.includes(room.id)}
+                      eventsLeft={eventsLeft} active={currentRoom === room.id}
+                      onClick={() => handleRoomClick(room.id)} activePower={activePower} />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Powers */}
+            <div className="glass-card p-4 hidden lg:block">
+              <h3 className="text-xs font-bold text-white/50 uppercase tracking-wider mb-3">✨ Poderes</h3>
+              <PowerPanel powers={powers} onActivate={(id) => store.activatePower(id)} />
+            </div>
+          </div>
+
+          {/* Right: Active Event */}
+          <div className="space-y-4">
+            {!currentRoom && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="glass-card p-8 text-center">
+                <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 3, repeat: Infinity }}
+                  className="text-6xl mb-4">🏠</motion.div>
+                <h2 className="text-2xl font-bold mb-2">¡Bienvenido a tu Casa Digital!</h2>
+                <p className="text-white/60 text-sm max-w-md mx-auto">
+                  Explora cada habitación para descubrir situaciones de riesgo. Toma decisiones inteligentes, desbloquea poderes y protege tu futuro.
+                </p>
+                <p className="text-white/40 text-xs mt-4">👈 Selecciona una habitación para empezar</p>
+              </motion.div>
+            )}
+
+            {currentRoom && !activeEvent && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="glass-card p-6 text-center">
+                <span className="text-5xl block mb-3">{rooms[currentRoom].icon}</span>
+                <h2 className="text-xl font-bold mb-1">{rooms[currentRoom].name}</h2>
+                <p className="text-white/50 text-sm">{rooms[currentRoom].description}</p>
+                <p className="text-neon-green text-xs mt-4 font-semibold">✅ ¡Todos los eventos completados aquí!</p>
+                <p className="text-white/30 text-xs mt-1">Explora otra habitación →</p>
+              </motion.div>
+            )}
+
+            <AnimatePresence mode="wait">
+              {activeEvent && (
+                <EventPanel key={activeEvent.id} event={activeEvent} onDecision={handleDecision}
+                  selectedDecision={selectedDecision} showFeedback={showFeedback}
+                  feedbackDecision={selectedDecision} onContinue={handleContinue}
+                  onAltFuture={(text) => store.showAlternateFuture(text)}
+                  timerExpired={timerExpired} />
+              )}
+            </AnimatePresence>
+
+            {/* Mobile Powers */}
+            <div className="lg:hidden glass-card p-4">
+              <h3 className="text-xs font-bold text-white/50 uppercase tracking-wider mb-3">✨ Poderes</h3>
+              <PowerPanel powers={powers} onActivate={(id) => store.activatePower(id)} />
+            </div>
+
+            {/* Finish button */}
+            {doneCount >= totalEvents && (
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
+                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                  animate={{ boxShadow: ['0 0 20px rgba(37,99,235,0.3)', '0 0 40px rgba(37,99,235,0.6)', '0 0 20px rgba(37,99,235,0.3)'] }}
+                  transition={{ boxShadow: { duration: 2, repeat: Infinity } }}
+                  onClick={() => { store.setSimulationComplete(true); navigate('/results'); }}
+                  className="px-10 py-4 bg-gradient-to-r from-electric-blue via-deep-purple to-neon-green text-white font-bold text-lg rounded-2xl">
+                  🔮 Ver mi Futuro Paralelo
+                </motion.button>
+              </motion.div>
+            )}
           </div>
         </div>
-
-        {/* Progress bar */}
-        <div className="h-1 bg-white/5">
-          <motion.div
-            className="h-full bg-gradient-to-r from-electric-blue via-deep-purple to-neon-green"
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
       </div>
 
-      {/* Main content */}
-      <div className="pt-24 pb-8 px-4 min-h-screen flex flex-col items-center justify-center relative z-10">
-        <AnimatePresence mode="wait">
-          <ScenarioCard
-            key={currentScenario.id}
-            scenario={currentScenario}
-            onDecision={handleDecision}
-            selectedDecision={selectedDecision}
-          />
-        </AnimatePresence>
+      {/* Mascot */}
+      <Mascot state={mascotState} message={mascotMessage} />
 
-        <AnimatePresence>
-          {showFeedback && selectedDecision && (
-            <FeedbackOverlay decision={selectedDecision} onContinue={handleContinue} />
-          )}
-        </AnimatePresence>
-
-        {/* Scenario dots */}
-        <div className="flex gap-1.5 mt-8 flex-wrap justify-center">
-          {scenarios.map((_, i) => (
-            <motion.div
-              key={i}
-              className={`h-2 rounded-full transition-all ${
-                i === currentScenarioIndex
-                  ? 'w-6 bg-electric-blue'
-                  : i < currentScenarioIndex
-                  ? 'w-2 bg-neon-green'
-                  : 'w-2 bg-white/20'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Particle effect on good decisions */}
+      {/* Alt Future Modal */}
       <AnimatePresence>
-        {showFeedback && selectedDecision?.riskDelta <= 0 && (
-          <>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{
-                  opacity: 1,
-                  x: window.innerWidth / 2,
-                  y: window.innerHeight / 2,
-                  scale: 0,
-                }}
-                animate={{
-                  opacity: 0,
-                  x: window.innerWidth / 2 + (Math.random() - 0.5) * 400,
-                  y: window.innerHeight / 2 + (Math.random() - 0.5) * 400,
-                  scale: Math.random() + 0.5,
-                }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.5, ease: 'easeOut' }}
-                className="fixed pointer-events-none z-50 w-3 h-3 rounded-full"
-                style={{
-                  backgroundColor: ['#22C55E', '#2563EB', '#FACC15', '#7C3AED'][i % 4],
-                }}
-              />
-            ))}
-          </>
-        )}
+        {showAltFuture && <AltFutureModal text={altFutureText} onClose={() => store.hideAlternateFuture()} />}
       </AnimatePresence>
+
+      {/* Badge Toast */}
+      <AnimatePresence>
+        {newBadge && <BadgeToast badge={newBadge} onClose={() => store.clearNewBadge()} />}
+      </AnimatePresence>
+
+      {/* Confetti */}
+      <AnimatePresence>{showConfetti && <Confetti />}</AnimatePresence>
     </div>
   );
 }
