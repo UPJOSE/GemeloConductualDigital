@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import ParticlesCanvas from '../components/ParticlesCanvas';
+import aniqemLogo from '../images.png';
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -113,50 +114,88 @@ export default function Landing() {
     <div className="aurora-bg min-h-screen" onMouseMove={handleMouseMove}>
       <ParticlesCanvas mousePos={mousePos} />
 
+      {/* NAVBAR */}
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="fixed top-0 left-0 right-0 z-50 bg-dark-bg/60 backdrop-blur-xl border-b border-white/5"
+      >
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🛡️</span>
+            <span className="font-bold text-sm md:text-base text-white">Gemelo Conductual</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <img src={aniqemLogo} alt="ANIQEM" className="h-8 md:h-9 object-contain bg-white rounded-md px-2 py-1" />
+          </div>
+        </div>
+      </motion.nav>
+
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center px-4 pt-20 overflow-hidden">
         <motion.div style={{ y: bgY }} className="absolute inset-0 z-0" />
         <div className="relative z-10 text-center max-w-4xl mx-auto">
+          {/* Alliance badge */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
+          >
+            <img src={aniqemLogo} alt="ANIQEM" className="h-5 object-contain bg-white rounded px-1" />
+            <span className="text-xs md:text-sm text-white/60">Proyecto en alianza con ANIQEM</span>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="mb-8"
+            className="mb-6"
           >
-            <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-electric-blue to-deep-purple flex items-center justify-center float-animation pulse-glow">
-              <span className="text-6xl">🧬</span>
+            <div className="w-28 h-28 mx-auto mb-4 rounded-full bg-gradient-to-br from-bright-orange/80 to-vibrant-yellow/80 flex items-center justify-center float-animation pulse-glow">
+              <span className="text-5xl">🛡️</span>
             </div>
           </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-sm md:text-base font-semibold tracking-widest uppercase text-bright-orange/80 mb-4"
+          >
+            Prevención de Quemaduras Infantiles
+          </motion.p>
 
           <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+            transition={{ delay: 0.4 }}
+            className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
           >
-            <TypeWriter text="Cada decisión crea un futuro diferente." speed={60} />
+            <TypeWriter text="Tus decisiones pueden prevenir quemaduras." speed={50} />
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2.5, duration: 0.6 }}
-            className="text-lg md:text-xl text-white/70 mb-10 max-w-2xl mx-auto"
+            transition={{ delay: 2.8, duration: 0.6 }}
+            className="text-base md:text-lg text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Descubre tu <span className="gradient-text font-bold">Gemelo Conductual Digital</span> en alianza con ANIQEM.
+            Un <span className="text-white font-semibold">simulador conductual predictivo</span> que enseña a niños de 9 a 12 años a identificar riesgos de quemaduras en el hogar, a través de escenarios interactivos y un <span className="gradient-text font-bold">Gemelo Conductual Digital</span>.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 3, duration: 0.6 }}
+            transition={{ delay: 3.2, duration: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <button
               onClick={() => navigate('/avatar')}
-              className="btn-3d px-8 py-4 bg-gradient-to-r from-electric-blue to-deep-purple text-white font-bold text-lg rounded-2xl hover:shadow-2xl transition-all"
+              className="btn-3d px-8 py-4 bg-gradient-to-r from-bright-orange to-vibrant-yellow text-dark-bg font-bold text-lg rounded-2xl hover:shadow-2xl transition-all"
             >
-              🧬 Crear mi Gemelo
+              🛡️ Iniciar Simulación
             </button>
             <button
               onClick={() => document.getElementById('problema').scrollIntoView({ behavior: 'smooth' })}
@@ -166,11 +205,30 @@ export default function Landing() {
             </button>
           </motion.div>
 
+          {/* Quick stats strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 3.6, duration: 0.6 }}
+            className="mt-14 grid grid-cols-3 gap-4 max-w-lg mx-auto"
+          >
+            {[
+              { num: '35K+', text: 'niños afectados/año' },
+              { num: '70%', text: 'ocurren en el hogar' },
+              { num: '60%', text: 'son prevenibles' },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <p className="text-lg md:text-xl font-bold text-bright-orange">{s.num}</p>
+                <p className="text-[10px] md:text-xs text-white/40">{s.text}</p>
+              </div>
+            ))}
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 3.5 }}
-            className="mt-16"
+            transition={{ delay: 4 }}
+            className="mt-12"
           >
             <motion.div
               animate={{ y: [0, 10, 0] }}
@@ -186,11 +244,14 @@ export default function Landing() {
       {/* PROBLEMA */}
       <SectionWrapper className="max-w-6xl mx-auto" >
         <div id="problema" className="scroll-mt-20" />
+        <motion.div variants={fadeUp} className="text-center mb-4">
+          <span className="inline-block px-3 py-1 rounded-full bg-bright-orange/10 border border-bright-orange/20 text-bright-orange text-xs font-semibold tracking-wider uppercase mb-4">Contexto del problema</span>
+        </motion.div>
         <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-bold text-center mb-4">
-          El Problema que <span className="gradient-text">Enfrentamos</span>
+          Las Quemaduras Infantiles <span className="text-bright-orange">son Prevenibles</span>
         </motion.h2>
         <motion.p variants={fadeUp} className="text-white/60 text-center mb-12 max-w-2xl mx-auto">
-          Las quemaduras infantiles son una de las principales causas de lesiones prevenibles en América Latina.
+          En el Perú, miles de niños sufren quemaduras cada año, la mayoría dentro de sus propios hogares. La educación preventiva es la herramienta más poderosa para cambiar esta realidad.
         </motion.p>
 
         <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -287,25 +348,87 @@ export default function Landing() {
       </SectionWrapper>
 
       {/* ALIANZA ANIQEM */}
-      <SectionWrapper className="max-w-4xl mx-auto text-center">
+      <SectionWrapper className="max-w-5xl mx-auto">
         <motion.div variants={fadeUp} className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-electric-blue/20 via-transparent to-electric-blue/20 rounded-3xl blur-3xl" />
-          <div className="relative glass-card p-8 md:p-12 border border-white/10">
-            <motion.div
-              animate={{ boxShadow: ['0 0 30px rgba(37,99,235,0.2)', '0 0 60px rgba(37,99,235,0.4)', '0 0 30px rgba(37,99,235,0.2)'] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-white/10 flex items-center justify-center"
-            >
-              <span className="text-5xl">🏛️</span>
-            </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-r from-bright-orange/10 via-transparent to-bright-orange/10 rounded-3xl blur-3xl" />
+          <div className="relative rounded-3xl overflow-hidden border border-white/10">
+            {/* Professional header bar */}
+            <div className="bg-gradient-to-r from-white/[0.08] to-white/[0.03] px-6 md:px-10 py-4 border-b border-white/10 flex items-center justify-between">
+              <span className="text-xs md:text-sm font-semibold tracking-wider uppercase text-white/40">Alianza Estratégica</span>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
+                <span className="text-xs text-neon-green/80 font-medium">Activa</span>
+              </div>
+            </div>
 
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Alianza con <span className="text-electric-blue">ANIQEM</span>
-            </h2>
-            <p className="text-white/70 max-w-xl mx-auto leading-relaxed">
-              Proyecto validado conceptualmente en colaboración con ANIQEM para prevención de quemaduras infantiles.
-              Juntos construimos herramientas tecnológicas que salvan vidas.
-            </p>
+            <div className="p-8 md:p-12 bg-white/[0.03]">
+              <div className="grid md:grid-cols-[1fr_auto_1fr] gap-8 items-center">
+                {/* Left: ANIQEM info */}
+                <div className="text-center md:text-left">
+                  <motion.div
+                    animate={{ boxShadow: ['0 0 20px rgba(249,115,22,0.15)', '0 0 40px rgba(249,115,22,0.25)', '0 0 20px rgba(249,115,22,0.15)'] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="inline-block bg-white rounded-xl p-4 md:p-5 mb-5"
+                  >
+                    <img src={aniqemLogo} alt="ANIQEM - Asociación de Ayuda al Niño Quemado" className="h-12 md:h-16 object-contain" />
+                  </motion.div>
+                  <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">
+                    ANIQEM
+                  </h3>
+                  <p className="text-white/40 text-sm font-medium">
+                    Asociación de Ayuda al Niño Quemado
+                  </p>
+                </div>
+
+                {/* Center divider */}
+                <div className="hidden md:flex flex-col items-center gap-2">
+                  <div className="w-px h-8 bg-white/10" />
+                  <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                    <span className="text-sm">🤝</span>
+                  </div>
+                  <div className="w-px h-8 bg-white/10" />
+                </div>
+
+                {/* Right: Project info */}
+                <div className="text-center md:text-right">
+                  <div className="inline-block bg-gradient-to-br from-electric-blue/20 to-deep-purple/20 rounded-xl p-4 md:p-5 mb-5 border border-white/10">
+                    <span className="text-4xl">🧬</span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">
+                    Gemelo Conductual Digital
+                  </h3>
+                  <p className="text-white/40 text-sm font-medium">
+                    Simulador de Prevención de Quemaduras
+                  </p>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mt-8 pt-8 border-t border-white/10">
+                <p className="text-white/60 text-center max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+                  Proyecto validado conceptualmente en colaboración con <span className="text-white font-semibold">ANIQEM</span> (Asociación de Ayuda al Niño Quemado) para la <span className="text-bright-orange font-semibold">prevención de quemaduras infantiles</span> en el Perú. Utilizamos tecnología de simulación conductual para generar conciencia y reducir los índices de accidentes domésticos en la población infantil.
+                </p>
+              </div>
+
+              {/* Impact numbers */}
+              <div className="mt-8 grid grid-cols-3 gap-4">
+                {[
+                  { label: 'Misión', value: 'Prevención', icon: '🎯' },
+                  { label: 'Población', value: '9-12 años', icon: '👧' },
+                  { label: 'Enfoque', value: 'Quemaduras', icon: '🏥' },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    whileHover={{ scale: 1.03 }}
+                    className="text-center p-4 rounded-xl bg-white/[0.03] border border-white/5"
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    <p className="text-sm font-bold text-white mt-1">{item.value}</p>
+                    <p className="text-[10px] text-white/30 uppercase tracking-wider mt-0.5">{item.label}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
         </motion.div>
       </SectionWrapper>
@@ -407,8 +530,17 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="text-center py-8 text-white/30 text-sm border-t border-white/5">
-        <p>Gemelo Conductual Digital © 2026 | En alianza con ANIQEM</p>
+      <footer className="border-t border-white/5 py-10 px-4">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-lg">🛡️</span>
+            <span className="text-white/40 text-sm font-medium">Gemelo Conductual Digital © 2026</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-white/30 text-xs">En alianza con</span>
+            <img src={aniqemLogo} alt="ANIQEM" className="h-7 object-contain bg-white rounded px-2 py-0.5" />
+          </div>
+        </div>
       </footer>
     </div>
   );
