@@ -292,7 +292,8 @@ export default function AvatarCreation() {
   };
 
   const handleSelectGuardianes = () => {
-    window.open('https://upjose.github.io/Guardianes-Antillama/', '_blank');
+    startSession();
+    navigate('/guardianes');
   };
 
   if (showModeSelect) {

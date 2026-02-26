@@ -154,11 +154,47 @@ function RoomCard({ room, visited, eventsLeft, active, onClick, activePower }) {
   );
 }
 
+/* ─── Scene Illustrations ─── */
+const EVENT_SCENES = {
+  k1: { emoji: '🍲', bg: 'from-orange-500/20 to-red-500/10', scene: '🔥🍳💨', label: 'Olla hirviendo en la estufa' },
+  k2: { emoji: '📦', bg: 'from-yellow-500/20 to-orange-500/10', scene: '⚡🍽️✨', label: 'Plato metálico en microondas' },
+  k3: { emoji: '💨', bg: 'from-red-500/20 to-orange-500/10', scene: '🔥💨⚠️', label: 'Fuga de gas en cocina' },
+  s1: { emoji: '🔌', bg: 'from-blue-500/20 to-cyan-500/10', scene: '⚡🔌📎', label: 'Enchufe sin protección' },
+  s2: { emoji: '⚡', bg: 'from-yellow-500/20 to-blue-500/10', scene: '⚡🔧💥', label: 'Cable pelado con corriente' },
+  s3: { emoji: '👕', bg: 'from-red-400/20 to-orange-400/10', scene: '🔥👕♨️', label: 'Plancha caliente olvidada' },
+  b1: { emoji: '🚿', bg: 'from-cyan-500/20 to-blue-500/10', scene: '🚿💨🌡️', label: 'Agua muy caliente' },
+  b2: { emoji: '💨', bg: 'from-cyan-400/20 to-yellow-400/10', scene: '💨💧⚡', label: 'Secadora cerca del agua' },
+  d1: { emoji: '🔦', bg: 'from-orange-500/20 to-yellow-500/10', scene: '🔥🧒🤔', label: 'Encendedor encontrado' },
+  d2: { emoji: '🕯️', bg: 'from-amber-500/20 to-red-400/10', scene: '🕯️🔥🪟', label: 'Velas cerca de cortinas' },
+  p1: { emoji: '🎆', bg: 'from-purple-500/20 to-red-500/10', scene: '🎆🧨💥', label: 'Pirotecnia sin supervisión' },
+  p2: { emoji: '🔴', bg: 'from-red-500/20 to-orange-500/10', scene: '🔥📄💨', label: 'Fósforos cerca de papel' },
+};
+
 /* ─── Event Panel ─── */
 function EventPanel({ event, onDecision, selectedDecision, showFeedback, feedbackDecision, onContinue, onAltFuture, timerExpired }) {
+  const scene = EVENT_SCENES[event.id] || { emoji: event.icon, bg: 'from-white/10 to-white/5', scene: event.icon, label: '' };
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
       className="glass-card p-5 md:p-6 w-full">
+
+      {/* Scene Illustration */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className={`relative rounded-2xl bg-gradient-to-br ${scene.bg} p-6 mb-5 text-center overflow-hidden`}
+      >
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+        <motion.div
+          animate={{ y: [0, -6, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          className="text-6xl md:text-7xl mb-2 relative z-10"
+        >
+          {scene.emoji}
+        </motion.div>
+        <div className="text-3xl md:text-4xl tracking-widest relative z-10 mb-2">{scene.scene}</div>
+        <p className="text-white/40 text-xs font-medium relative z-10">{scene.label}</p>
+      </motion.div>
+
       <div className="flex items-center gap-3 mb-3">
         <span className="text-2xl">{event.icon}</span>
         <div className="flex-1">
@@ -246,11 +282,12 @@ export default function Simulator() {
   };
 
   const handleRoomClick = (roomId) => {
+    if (currentRoom === roomId && activeEvent) return;
     store.setCurrentRoom(roomId);
     const avail = getAvailableEvents(roomId);
     if (avail.length > 0) {
-      const evt = avail[Math.random() < 0.4 && avail.find((e) => e.type === 'surprise') ? avail.findIndex((e) => e.type === 'surprise') : 0];
-      const chosen = typeof evt === 'number' ? avail[evt] : avail[0];
+      const surprise = avail.find((e) => e.type === 'surprise');
+      const chosen = (Math.random() < 0.4 && surprise) ? surprise : avail[0];
       store.setActiveEvent(chosen);
       if (chosen.type === 'surprise') store.setMascotState('scared');
       else store.setMascotState('hint', `Cuidado en ${rooms[roomId].name}...`);
@@ -280,11 +317,14 @@ export default function Simulator() {
   };
 
   const handleContinue = () => {
-    store.completeEvent(activeEvent.id);
+    const justCompletedId = activeEvent.id;
+    store.completeEvent(justCompletedId);
     setSelectedDecision(null);
     setShowFeedback(false);
 
-    const remaining = getAvailableEvents(currentRoom);
+    const remaining = (store.roomEvents[currentRoom] || []).filter(
+      (e) => !completedEvents.includes(e.id) && e.id !== justCompletedId
+    );
     if (remaining.length > 0) {
       store.setActiveEvent(remaining[0]);
       store.setMascotState('hint', 'Hay algo más aquí...');
@@ -293,7 +333,7 @@ export default function Simulator() {
       store.setMascotState('happy', '¡Habitación completada! Explora otra.');
 
       const allEvents = Object.values(store.roomEvents).flat();
-      const allDone = allEvents.every((e) => [...completedEvents, activeEvent.id].includes(e.id));
+      const allDone = allEvents.every((e) => [...completedEvents, justCompletedId].includes(e.id));
       if (allDone) {
         store.checkBadges();
         store.setSimulationComplete(true);
@@ -321,6 +361,11 @@ export default function Simulator() {
           </div>
           <IRPBar compact />
           <div className="text-xs text-white/40">{doneCount}/{totalEvents}</div>
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            onClick={() => { store.setSimulationComplete(true); navigate('/results'); }}
+            className="px-3 py-1.5 bg-white/10 text-white/50 font-semibold rounded-lg border border-white/10 hover:bg-white/20 hover:text-white transition-all text-[10px] sm:text-xs whitespace-nowrap">
+            🏁 Terminar
+          </motion.button>
         </div>
         <div className="h-1 bg-white/5">
           <motion.div className="h-full bg-gradient-to-r from-electric-blue via-neon-green to-vibrant-yellow"
