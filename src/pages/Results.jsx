@@ -270,7 +270,7 @@ export default function Results() {
 
     doc.setFontSize(12);
     doc.setTextColor(150, 150, 150);
-    doc.text('En alianza con ANIQEM', 105, 33, { align: 'center' });
+    doc.text('En alianza con ANIQUEM', 105, 33, { align: 'center' });
 
     doc.setDrawColor(37, 99, 235);
     doc.line(30, 38, 180, 38);
@@ -320,7 +320,7 @@ export default function Results() {
 
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    doc.text('Gemelo Conductual Digital © 2026 | ANIQEM', 105, 285, { align: 'center' });
+    doc.text('Gemelo Conductual Digital © 2026 | ANIQUEM', 105, 285, { align: 'center' });
 
     doc.save(`gemelo-conductual-${avatar.name || 'reporte'}.pdf`);
   };
@@ -592,7 +592,7 @@ export default function Results() {
 
         {/* Footer */}
         <div className="text-center py-8 text-white/30 text-sm border-t border-white/5">
-          <p>Gemelo Conductual Digital © 2026 | En alianza con ANIQEM</p>
+          <p>Gemelo Conductual Digital © 2026 | En alianza con ANIQUEM</p>
         </div>
       </div>
     </div>

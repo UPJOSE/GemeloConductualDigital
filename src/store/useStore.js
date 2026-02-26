@@ -182,6 +182,7 @@ const MASCOT_STATES = {
 const useStore = create((set, get) => ({
   // Avatar
   avatar: {
+    type: 'human', animalType: null,
     hair: 'short', hairColor: '#4A3728', clothing: 'tshirt',
     clothingColor: '#2563EB', skinColor: '#F5D0A9', accessory: 'none', name: '',
   },

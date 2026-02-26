@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import ParticlesCanvas from '../components/ParticlesCanvas';
-import aniqemLogo from '../images.png';
+import aniquemLogo from '../images.png';
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -106,7 +106,7 @@ export default function Landing() {
   const timelinePhases = [
     { phase: 'Fase 1', title: 'MVP validado en colegios', color: '#2563EB', icon: '🏫' },
     { phase: 'Fase 2', title: 'Modelo predictivo avanzado', color: '#22C55E', icon: '🧠' },
-    { phase: 'Fase 3', title: 'Dashboard poblacional para ANIQEM', color: '#F97316', icon: '📊' },
+    { phase: 'Fase 3', title: 'Dashboard poblacional para ANIQUEM', color: '#F97316', icon: '📊' },
     { phase: 'Fase 4', title: 'Escalamiento nacional', color: '#FACC15', icon: '🚀' },
   ];
 
@@ -127,7 +127,7 @@ export default function Landing() {
             <span className="font-bold text-sm md:text-base text-white">Gemelo Conductual</span>
           </div>
           <div className="flex items-center gap-3">
-            <img src={aniqemLogo} alt="ANIQEM" className="h-8 md:h-9 object-contain bg-white rounded-md px-2 py-1" />
+            <img src={aniquemLogo} alt="ANIQUEM" className="h-8 md:h-9 object-contain bg-white rounded-md px-2 py-1" />
           </div>
         </div>
       </motion.nav>
@@ -143,8 +143,8 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
           >
-            <img src={aniqemLogo} alt="ANIQEM" className="h-5 object-contain bg-white rounded px-1" />
-            <span className="text-xs md:text-sm text-white/60">Proyecto en alianza con ANIQEM</span>
+            <img src={aniquemLogo} alt="ANIQUEM" className="h-5 object-contain bg-white rounded px-1" />
+            <span className="text-xs md:text-sm text-white/60">Proyecto en alianza con ANIQUEM</span>
           </motion.div>
 
           <motion.div
@@ -347,7 +347,7 @@ export default function Landing() {
         </div>
       </SectionWrapper>
 
-      {/* ALIANZA ANIQEM */}
+      {/* ALIANZA ANIQUEM */}
       <SectionWrapper className="max-w-5xl mx-auto">
         <motion.div variants={fadeUp} className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-bright-orange/10 via-transparent to-bright-orange/10 rounded-3xl blur-3xl" />
@@ -363,17 +363,17 @@ export default function Landing() {
 
             <div className="p-8 md:p-12 bg-white/[0.03]">
               <div className="grid md:grid-cols-[1fr_auto_1fr] gap-8 items-center">
-                {/* Left: ANIQEM info */}
+                {/* Left: ANIQUEM info */}
                 <div className="text-center md:text-left">
                   <motion.div
                     animate={{ boxShadow: ['0 0 20px rgba(249,115,22,0.15)', '0 0 40px rgba(249,115,22,0.25)', '0 0 20px rgba(249,115,22,0.15)'] }}
                     transition={{ duration: 3, repeat: Infinity }}
                     className="inline-block bg-white rounded-xl p-4 md:p-5 mb-5"
                   >
-                    <img src={aniqemLogo} alt="ANIQEM - Asociación de Ayuda al Niño Quemado" className="h-12 md:h-16 object-contain" />
+                    <img src={aniquemLogo} alt="ANIQUEM - Asociación de Ayuda al Niño Quemado" className="h-12 md:h-16 object-contain" />
                   </motion.div>
                   <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">
-                    ANIQEM
+                    ANIQUEM
                   </h3>
                   <p className="text-white/40 text-sm font-medium">
                     Asociación de Ayuda al Niño Quemado
@@ -406,7 +406,7 @@ export default function Landing() {
               {/* Description */}
               <div className="mt-8 pt-8 border-t border-white/10">
                 <p className="text-white/60 text-center max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
-                  Proyecto validado conceptualmente en colaboración con <span className="text-white font-semibold">ANIQEM</span> (Asociación de Ayuda al Niño Quemado) para la <span className="text-bright-orange font-semibold">prevención de quemaduras infantiles</span> en el Perú. Utilizamos tecnología de simulación conductual para generar conciencia y reducir los índices de accidentes domésticos en la población infantil.
+                  Proyecto validado conceptualmente en colaboración con <span className="text-white font-semibold">ANIQUEM</span> (Asociación de Ayuda al Niño Quemado) para la <span className="text-bright-orange font-semibold">prevención de quemaduras infantiles</span> en el Perú. Utilizamos tecnología de simulación conductual para generar conciencia y reducir los índices de accidentes domésticos en la población infantil.
                 </p>
               </div>
 
@@ -538,7 +538,7 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-3">
             <span className="text-white/30 text-xs">En alianza con</span>
-            <img src={aniqemLogo} alt="ANIQEM" className="h-7 object-contain bg-white rounded px-2 py-0.5" />
+            <img src={aniquemLogo} alt="ANIQUEM" className="h-7 object-contain bg-white rounded px-2 py-0.5" />
           </div>
         </div>
       </footer>
