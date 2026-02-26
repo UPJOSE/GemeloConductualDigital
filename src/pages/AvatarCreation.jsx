@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import useStore from '../store/useStore';
 import AvatarDisplay from '../components/AvatarDisplay';
@@ -146,12 +146,13 @@ function ModeSelection({ onSelectHome, onSelectGuardianes }) {
 
 export default function AvatarCreation() {
   const navigate = useNavigate();
+  const location = useLocation();
   const avatar = useStore((s) => s.avatar);
   const setAvatar = useStore((s) => s.setAvatar);
   const startSession = useStore((s) => s.startSession);
   const [step, setStep] = useState(0);
   const [name, setName] = useState(avatar.name);
-  const [showModeSelect, setShowModeSelect] = useState(false);
+  const [showModeSelect, setShowModeSelect] = useState(location.state?.goToModeSelect || false);
 
   const isAnimal = avatar.type === 'animal';
 

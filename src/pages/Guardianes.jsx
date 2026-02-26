@@ -169,8 +169,8 @@ const HERO_BADGES = [
 
 /* ─── Cat meow interjections ─── */
 const MEOWS = [
-  '¡Miau!', '¡Miaaau!', '¡Prrr!', '¡Miau miau!', '¡Purrr purrr!',
-  '¡Mew!', '¡Nyaa!', '¡Miau miu!', '¡Prrrr!', '¡Miauuu!',
+  '¡Miau!', '¡Miaaau!', '¡Miau miau!', '¡Mew!',
+  '¡Nyaa!', '¡Miau miu!', '¡Miauuu!', '¡Miau mew!',
 ];
 const getRandomMeow = () => MEOWS[Math.floor(Math.random() * MEOWS.length)];
 
@@ -376,7 +376,7 @@ export default function Guardianes() {
   // ANI intro
   useEffect(() => {
     if (phase === 'intro') {
-      setAniMessage(`¡Miau miau! ¡Hola ${avatar.name || 'amiguito'}! 🐱 Soy ANI, tu gatito guardián. ¡Prrr prrr! Juntos viviremos historias súper emocionantes y aprenderemos a proteger a los que más queremos. ¡Miau! ¿Estás listo para la aventura?`);
+      setAniMessage(`¡Miau miau! ¡Hola ${avatar.name || 'amiguito'}! 🐱 Soy ANI, tu gatito guardián. Juntos viviremos historias súper emocionantes y aprenderemos a proteger a los que más queremos. ¡Miau! ¿Estás listo para la aventura?`);
       setAniMood('greeting');
     }
   }, [phase, avatar.name]);
@@ -390,7 +390,7 @@ export default function Guardianes() {
         speakText(currentChapter.text);
       } else if (currentChapter.type === 'decision') {
         setAniMood('thinking');
-        setAniMessage('¡Miau miau! ¡Es tu turno de decidir! 🐱 Piensa biiien antes de elegir... ¡Prrr!');
+        setAniMessage('¡Miau miau! ¡Es tu turno de decidir! 🐱 Piensa biiien antes de elegir...');
         speakText(currentChapter.text);
       }
     }
@@ -399,7 +399,7 @@ export default function Guardianes() {
   const handleStartAdventure = () => {
     stop();
     setPhase('story-select');
-    setAniMessage('¡Miau! Elige una historia para comenzar. ¡Prrr! Cada una te enseñará algo súper importante. 🐱');
+    setAniMessage('¡Miau! Elige una historia para comenzar. Cada una te enseñará algo súper importante. 🐱');
     setAniMood('happy');
   };
 
@@ -433,12 +433,12 @@ export default function Guardianes() {
       if (newCompleted.length >= STORIES.length) {
         setPhase('results');
         setAniMood('celebrating');
-        setAniMessage('¡MIAAAAAU! 🐱🏆 ¡Felicidades! ¡Has completado todas las historias! ¡Prrr prrr prrr! ¡Eres un verdadero Héroe Guardián! ¡Miau miau miau!');
-        speakText('¡MIAU MIAU! ¡Felicidades! ¡Has completado todas las historias! ¡Prrr prrr! ¡Eres un verdadero Héroe Guardián!');
+        setAniMessage('¡MIAAAAAU! 🐱🏆 ¡Felicidades! ¡Has completado todas las historias! ¡Eres un verdadero Héroe Guardián! ¡Miau miau miau!');
+        speakText('¡MIAU MIAU! ¡Felicidades! ¡Has completado todas las historias! ¡Eres un verdadero Héroe Guardián!');
       } else {
         setPhase('story-select');
         setAniMood('excited');
-        setAniMessage('¡Miau! ¡Historia completada! 🐱 ¡Prrr! Elige otra aventura para seguir aprendiendo. ¡Miau miau!');
+        setAniMessage('¡Miau! ¡Historia completada! 🐱 Elige otra aventura para seguir aprendiendo. ¡Miau miau!');
       }
     }
   };
@@ -460,13 +460,13 @@ export default function Guardianes() {
 
     if (option.isCorrect) {
       setAniMood('celebrating');
-      setAniMessage('¡MIAAAU! ¡INCREÍBLE! 🌟 ¡Esa es la decisión de un verdadero Guardián! ¡Prrr prrr prrr! 🐱');
+      setAniMessage('¡MIAAAU! ¡INCREÍBLE! 🌟 ¡Esa es la decisión de un verdadero Guardián! 🐱');
     } else if (option.riskTag === 'very_dangerous') {
       setAniMood('worried');
-      setAniMessage('¡Miau...! 😿 Eso fue muy peligroso... Pero miau, ¡aprendimos algo importante! 💡 ¡Prrr!');
+      setAniMessage('¡Miau...! 😿 Eso fue muy peligroso... Pero miau, ¡aprendimos algo importante! 💡');
     } else {
       setAniMood('thinking');
-      setAniMessage('¡Miu miu! 🐱 No fue la mejor opción, pero ¡miau! ¡Ahora sabes qué hacer la próxima vez! 📚 ¡Prrr!');
+      setAniMessage('¡Miu miu! 🐱 No fue la mejor opción, pero ¡miau! ¡Ahora sabes qué hacer la próxima vez! 📚');
     }
     speakText(option.feedback);
   };
@@ -664,7 +664,7 @@ export default function Guardianes() {
                     stop();
                     setPhase('results');
                     setAniMood('happy');
-                    setAniMessage('¡Miau! ¡Buen trabajo hasta aquí! 🐱 Veamos cómo te fue... ¡Prrr!');
+                    setAniMessage('¡Miau! ¡Buen trabajo hasta aquí! 🐱 Veamos cómo te fue...');
                   }}
                   className="px-6 py-2.5 bg-white/10 text-white/60 font-semibold rounded-xl border border-white/10 hover:bg-white/20 hover:text-white transition-all text-sm">
                   🏁 Terminar Prueba y Ver Reporte
@@ -846,9 +846,9 @@ export default function Guardianes() {
                 📄 Descargar Reporte PDF
               </motion.button>
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/avatar')}
+                onClick={() => navigate('/avatar', { state: { goToModeSelect: true } })}
                 className="px-8 py-3 bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all">
-                🏠 Volver al Inicio
+                � Elegir otro Modo
               </motion.button>
             </motion.div>
           </div>
